@@ -36,7 +36,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   });
 
   // Group products by subcategory
-  const grouped = category.subcategories.map((subcat) => ({
+  const grouped = category.subcategories.map((subcat: { slug: string; id: string; name: string }) => ({
     ...subcat,
     products: allProducts.filter((p) => p.subcategoryId === subcat.id),
   }));
