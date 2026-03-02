@@ -11,6 +11,7 @@ interface OrderItem {
 
 interface Order {
   total: number;
+  status: string;
   customerEmail: string;
   items: OrderItem[];
 }
@@ -42,13 +43,14 @@ export default function AdminRelatoriosPage() {
     });
   }, []);
 
-  const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
-  const avgTicket = orders.length > 0 ? totalRevenue / orders.length : 0;
+  const approvedOrders = orders.filter((o) => o.status === "Entregue");
+  const totalRevenue = approvedOrders.reduce((acc, o) => acc + o.total, 0);
+  const avgTicket = approvedOrders.length > 0 ? totalRevenue / approvedOrders.length : 0;
   const uniqueClients = new Set(orders.map((o) => o.customerEmail)).size;
 
   // Top products by quantity sold
   const salesMap = new Map<string, { name: string; sales: number; revenue: number }>();
-  for (const order of orders) {
+  for (const order of approvedOrders) {
     for (const item of order.items) {
       const existing = salesMap.get(item.productName) || { name: item.productName, sales: 0, revenue: 0 };
       existing.sales += item.quantity;

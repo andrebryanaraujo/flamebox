@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 
 interface AdminUser {
   email: string;
@@ -12,21 +11,13 @@ interface AdminUser {
 interface AdminContextType {
   user: AdminUser | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 const ADMIN_KEY = "nylived-admin";
-
-// Simulated admin credentials
-const ADMIN_CREDENTIALS = {
-  email: "admin@nylived.com",
-  password: "admin123",
-  name: "Administrador",
-  role: "admin",
-};
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -52,16 +43,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, hydrated]);
 
-  const login = useCallback((email: string, password: string): boolean => {
-    if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-      setUser({
-        email: ADMIN_CREDENTIALS.email,
-        name: ADMIN_CREDENTIALS.name,
-        role: ADMIN_CREDENTIALS.role,
+  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
+
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      setUser({ email: data.email, name: data.name, role: data.role });
       return true;
+    } catch {
+      return false;
     }
-    return false;
   }, []);
 
   const logout = useCallback(() => {

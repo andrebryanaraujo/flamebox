@@ -65,7 +65,8 @@ export default function AdminDashboard() {
     });
   }, []);
 
-  const totalRevenue = orders.reduce((acc: number, o: Order) => acc + o.total, 0);
+  const approvedOrders = orders.filter((o) => o.status === "Entregue");
+  const totalRevenue = approvedOrders.reduce((acc: number, o: Order) => acc + o.total, 0);
   const totalOrders = orders.length;
   const totalProducts = products.length;
 
@@ -86,7 +87,7 @@ export default function AdminDashboard() {
       const dayStr = date.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
       const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
       const dayEnd = new Date(dayStart.getTime() + 86400000);
-      const total = orders
+      const total = approvedOrders
         .filter((o) => {
           const d = new Date(o.createdAt);
           return d >= dayStart && d < dayEnd;

@@ -27,20 +27,18 @@ export default function AdminLoginPage() {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      const success = login(email, password);
-      if (success) {
-        router.push("/admin");
-      } else {
-        setError("E-mail ou senha incorretos. Tente novamente.");
-      }
-      setLoading(false);
-    }, 500);
+    const success = await login(email, password);
+    if (success) {
+      router.push("/admin");
+    } else {
+      setError("E-mail ou senha incorretos. Tente novamente.");
+    }
+    setLoading(false);
   };
 
   return (
