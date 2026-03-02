@@ -25,7 +25,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const productWhere: Record<string, unknown> = { categoryId: category.id };
   if (sub) {
-    const subcat = category.subcategories.find((s) => s.slug === sub);
+    const subcat = category.subcategories.find((s: { slug: string; id: string }) => s.slug === sub);
     if (subcat) productWhere.subcategoryId = subcat.id;
   }
 
