@@ -2,14 +2,42 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import type { Category, Subcategory, Product } from "@prisma/client";
 import CategorySidebar from "@/components/CategorySidebar";
 import ProductCard from "@/components/ProductCard";
 
 export const dynamic = "force-dynamic";
 
-type CategoryWithSubs = Category & { subcategories: Subcategory[] };
-type ProductWithSub = Product & { subcategory: Subcategory | null };
+interface Subcategory {
+  id: string;
+  slug: string;
+  name: string;
+  categoryId: string;
+}
+
+interface CategoryWithSubs {
+  id: string;
+  slug: string;
+  name: string;
+  emoji: string | null;
+  image: string;
+  banner: string;
+  subcategories: Subcategory[];
+}
+
+interface ProductWithSub {
+  id: string;
+  name: string;
+  price: number;
+  stock: number;
+  description: string;
+  image: string;
+  categorySlug: string;
+  categoryId: string;
+  subcategoryId: string | null;
+  subcategory: Subcategory | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
