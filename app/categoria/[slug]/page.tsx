@@ -2,10 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import type { Category, Subcategory, Product } from "@prisma/client";
 import CategorySidebar from "@/components/CategorySidebar";
 import ProductCard from "@/components/ProductCard";
 
 export const dynamic = "force-dynamic";
+
+type CategoryWithSubs = Category & { subcategories: Subcategory[] };
+type ProductWithSub = Product & { subcategory: Subcategory | null };
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -19,30 +23,30 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const category = await prisma.category.findUnique({
     where: { slug },
     include: { subcategories: true },
-  });
+  }) as CategoryWithSubs | null;
 
   if (!category) notFound();
 
   const productWhere: Record<string, unknown> = { categoryId: category.id };
   if (sub) {
-    const subcat = category.subcategories.find((s: { slug: string; id: string }) => s.slug === sub);
+    const subcat = category.subcategories.find((s) => s.slug === sub);
     if (subcat) productWhere.subcategoryId = subcat.id;
   }
 
-  const allProducts = await prisma.product.findMany({
+  const allProducts: ProductWithSub[] = await prisma.product.findMany({
     where: { categoryId: category.id },
     include: { subcategory: true },
     orderBy: { createdAt: "desc" },
   });
 
   // Group products by subcategory
-  const grouped = category.subcategories.map((subcat: { slug: string; id: string; name: string }) => ({
+  const grouped = category.subcategories.map((subcat) => ({
     ...subcat,
-    products: allProducts.filter((p: { subcategoryId: string | null }) => p.subcategoryId === subcat.id),
+    products: allProducts.filter((p) => p.subcategoryId === subcat.id),
   }));
 
   // Products without subcategory
-  const ungrouped = allProducts.filter((p: { subcategoryId: string | null }) => !p.subcategoryId);
+  const ungrouped = allProducts.filter((p) => !p.subcategoryId);
 
   // If sub filter is active, show only that subcategory
   const displayed = sub
