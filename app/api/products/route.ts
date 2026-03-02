@@ -7,11 +7,13 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const categorySlug = searchParams.get("categorySlug");
+    const categoryId = searchParams.get("categoryId");
     const subcategoryId = searchParams.get("subcategoryId");
     const search = searchParams.get("search");
 
     const where: Record<string, unknown> = {};
     if (categorySlug) where.categorySlug = categorySlug;
+    if (categoryId) where.categoryId = categoryId;
     if (subcategoryId) where.subcategoryId = subcategoryId;
     if (search) {
       where.name = { contains: search, mode: "insensitive" };

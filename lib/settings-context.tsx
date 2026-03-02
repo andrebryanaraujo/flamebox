@@ -17,6 +17,10 @@ export interface SiteSettings {
   logoUrl: string;
   faviconUrl: string;
   ogImageUrl: string;
+  instagramUrl: string;
+  whatsappUrl: string;
+  discordUrl: string;
+  tiktokUrl: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -34,6 +38,10 @@ const defaultSettings: SiteSettings = {
   logoUrl: "",
   faviconUrl: "",
   ogImageUrl: "",
+  instagramUrl: "",
+  whatsappUrl: "",
+  discordUrl: "",
+  tiktokUrl: "",
 };
 
 interface SettingsContextType {

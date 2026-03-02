@@ -1,6 +1,6 @@
 "use client";
 
-import { Save, Store, Palette, Bell, Shield, Check, ImageIcon } from "lucide-react";
+import { Save, Store, Palette, Bell, Shield, Check, ImageIcon, Share2 } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 import { useState, useEffect } from "react";
 import style from "styled-jsx/style";
@@ -32,6 +32,10 @@ export default function AdminConfiguracoesPage() {
     logoUrl: "",
     faviconUrl: "",
     ogImageUrl: "",
+    instagramUrl: "",
+    whatsappUrl: "",
+    discordUrl: "",
+    tiktokUrl: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -51,6 +55,10 @@ export default function AdminConfiguracoesPage() {
         logoUrl: settings.logoUrl || "",
         faviconUrl: settings.faviconUrl || "",
         ogImageUrl: settings.ogImageUrl || "",
+        instagramUrl: settings.instagramUrl || "",
+        whatsappUrl: settings.whatsappUrl || "",
+        discordUrl: settings.discordUrl || "",
+        tiktokUrl: settings.tiktokUrl || "",
       });
     }
   }, [loading, settings]);
@@ -406,6 +414,54 @@ export default function AdminConfiguracoesPage() {
                   <img src={form.ogImageUrl} alt="Preview OG" style={{ width: "100%", height: 120, objectFit: "cover", display: "block" }} />
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media */}
+        <div className="admin-chart-card">
+          <h3 className="admin-chart-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <Share2 size={18} /> Redes Sociais
+          </h3>
+          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "1.25rem" }}>
+            Links das redes sociais exibidos no rodapé do site.
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div className="form-group">
+              <label className="form-label">Instagram</label>
+              <input
+                className="form-input"
+                placeholder="https://instagram.com/minhaloja"
+                value={form.instagramUrl}
+                onChange={(e) => setForm({ ...form, instagramUrl: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">WhatsApp</label>
+              <input
+                className="form-input"
+                placeholder="https://wa.me/5511999999999"
+                value={form.whatsappUrl}
+                onChange={(e) => setForm({ ...form, whatsappUrl: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Discord</label>
+              <input
+                className="form-input"
+                placeholder="https://discord.gg/minhaloja"
+                value={form.discordUrl}
+                onChange={(e) => setForm({ ...form, discordUrl: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">TikTok</label>
+              <input
+                className="form-input"
+                placeholder="https://tiktok.com/@minhaloja"
+                value={form.tiktokUrl}
+                onChange={(e) => setForm({ ...form, tiktokUrl: e.target.value })}
+              />
             </div>
           </div>
         </div>

@@ -11,8 +11,35 @@ function WhatsAppIcon({ size = 18 }: { size?: number }) {
   );
 }
 
+function DiscordIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8.5 17c0 0 1.5-2 3.5-2s3.5 2 3.5 2" />
+      <circle cx="9" cy="10" r="0.5" fill="currentColor" />
+      <circle cx="15" cy="10" r="0.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function TikTokIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+  );
+}
+
 export default function Footer() {
   const { settings } = useSettings();
+
+  const socials = [
+    { url: settings.instagramUrl, label: "Instagram", icon: <Instagram size={18} /> },
+    { url: settings.whatsappUrl, label: "WhatsApp", icon: <WhatsAppIcon size={18} /> },
+    { url: settings.discordUrl, label: "Discord", icon: <DiscordIcon size={18} /> },
+    { url: settings.tiktokUrl, label: "TikTok", icon: <TikTokIcon size={18} /> },
+  ].filter((s) => s.url);
 
   return (
     <footer className="footer">
@@ -40,17 +67,26 @@ export default function Footer() {
         </div>
 
         {/* Right: Socials */}
-        <div>
-          <h4 className="footer-heading">Confira nossas redes sociais</h4>
-          <div className="footer-socials">
-            <a href="#" className="footer-social" aria-label="Instagram" title="Instagram">
-              <Instagram size={18} />
-            </a>
-            <a href="#" className="footer-social" aria-label="WhatsApp" title="WhatsApp">
-              <WhatsAppIcon size={18} />
-            </a>
+        {socials.length > 0 && (
+          <div>
+            <h4 className="footer-heading">Confira nossas redes sociais</h4>
+            <div className="footer-socials">
+              {socials.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.url}
+                  className="footer-social"
+                  aria-label={social.label}
+                  title={social.label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="footer-bottom">

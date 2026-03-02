@@ -3,41 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import CategorySidebar from "@/components/CategorySidebar";
-import ProductCard from "@/components/ProductCard";
+import SubcategoryFilterPanel from "@/components/SubcategoryFilterPanel";
 
 export const dynamic = "force-dynamic";
-
-interface Subcategory {
-  id: string;
-  slug: string;
-  name: string;
-  categoryId: string;
-}
-
-interface CategoryWithSubs {
-  id: string;
-  slug: string;
-  name: string;
-  emoji: string | null;
-  image: string;
-  banner: string;
-  subcategories: Subcategory[];
-}
-
-interface ProductWithSub {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-  description: string;
-  image: string;
-  categorySlug: string;
-  categoryId: string;
-  subcategoryId: string | null;
-  subcategory: Subcategory | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -51,35 +19,43 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const category = await prisma.category.findUnique({
     where: { slug },
     include: { subcategories: true },
-  }) as CategoryWithSubs | null;
+  });
 
   if (!category) notFound();
 
-  const productWhere: Record<string, unknown> = { categoryId: category.id };
-  if (sub) {
-    const subcat = category.subcategories.find((s) => s.slug === sub);
-    if (subcat) productWhere.subcategoryId = subcat.id;
-  }
-
-  const allProducts: ProductWithSub[] = await prisma.product.findMany({
+  const allProducts = await prisma.product.findMany({
     where: { categoryId: category.id },
     include: { subcategory: true },
     orderBy: { createdAt: "desc" },
   });
 
+  // Serialize products for client component (strip Date objects)
+  const serializeProduct = (p: typeof allProducts[number]) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    stock: p.stock,
+    description: p.description,
+    image: p.image,
+    categorySlug: p.categorySlug,
+    categoryId: p.categoryId,
+    subcategoryId: p.subcategoryId,
+  });
+
   // Group products by subcategory
-  const grouped = category.subcategories.map((subcat) => ({
-    ...subcat,
-    products: allProducts.filter((p) => p.subcategoryId === subcat.id),
+  const groups = category.subcategories.map((subcat) => ({
+    id: subcat.id,
+    slug: subcat.slug,
+    name: subcat.name,
+    products: allProducts
+      .filter((p) => p.subcategoryId === subcat.id)
+      .map(serializeProduct),
   }));
 
   // Products without subcategory
-  const ungrouped = allProducts.filter((p) => !p.subcategoryId);
-
-  // If sub filter is active, show only that subcategory
-  const displayed = sub
-    ? grouped.filter((g) => g.slug === sub)
-    : grouped;
+  const ungrouped = allProducts
+    .filter((p) => !p.subcategoryId)
+    .map(serializeProduct);
 
   return (
     <div className="container-main">
@@ -110,35 +86,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          {/* Products without subcategory */}
-          {!sub && ungrouped.length > 0 && (
-            <div className="subcategory-group">
-              <div className="subcategory-heading">Todos os Produtos</div>
-              <div className="products-grid">
-                {ungrouped.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Product sections by subcategory */}
-          {displayed.map((group) => (
-            <div key={group.slug} className="subcategory-group">
-              <div className="subcategory-heading">{group.name}</div>
-              {group.products.length > 0 ? (
-                <div className="products-grid">
-                  {group.products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              ) : (
-                <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", padding: "1rem 0" }}>
-                  Nenhum produto disponível nesta subcategoria.
-                </p>
-              )}
-            </div>
-          ))}
+          {/* Filter Panel + Products */}
+          <SubcategoryFilterPanel
+            subcategories={category.subcategories.map((s) => ({ id: s.id, slug: s.slug, name: s.name }))}
+            groups={groups}
+            ungrouped={ungrouped}
+          />
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { ShoppingCart, CreditCard } from "lucide-react";
 import { formatPrice } from "@/lib/data";
 import { useCart } from "@/lib/cart-context";
 import { use, useState, useEffect } from "react";
+import ProductVariations from "@/components/ProductVariations";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -19,12 +20,16 @@ interface ProductData {
   description: string;
   image: string;
   categorySlug: string;
+  categoryId: string;
+  subcategoryId: string | null;
+  subcategory?: { id: string; name: string; slug: string } | null;
 }
 
 export default function ProductPage({ params }: Props) {
   const { id } = use(params);
   const { addItem } = useCart();
   const [product, setProduct] = useState<ProductData | null>(null);
+  const [related, setRelated] = useState<ProductData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,6 +38,16 @@ export default function ProductPage({ params }: Props) {
       .then((data) => {
         setProduct(data);
         setLoading(false);
+
+        // Fetch related products from same subcategory or category
+        const filterParam = data.subcategoryId
+          ? `subcategoryId=${data.subcategoryId}`
+          : `categoryId=${data.categoryId}`;
+        fetch(`/api/products?${filterParam}`)
+          .then((res) => res.json())
+          .then((products: ProductData[]) => {
+            setRelated(products.filter((p) => p.id !== data.id).slice(0, 8));
+          });
       })
       .catch(() => setLoading(false));
   }, [id]);
@@ -106,6 +121,15 @@ export default function ProductPage({ params }: Props) {
           </div>
 
           <p className="product-detail-desc">{product.description}</p>
+
+          {/* Variations Panel */}
+          {related.length > 0 && (
+            <ProductVariations
+              currentProductId={product.id}
+              variants={[product, ...related]}
+              title={product.subcategory?.name || "Produtos"}
+            />
+          )}
 
           <button
             className="btn-add-cart"

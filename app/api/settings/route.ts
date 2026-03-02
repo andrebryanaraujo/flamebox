@@ -43,6 +43,10 @@ export async function PUT(request: NextRequest) {
       logoUrl: body.logoUrl ?? "",
       faviconUrl: body.faviconUrl ?? "",
       ogImageUrl: body.ogImageUrl ?? "",
+      instagramUrl: body.instagramUrl ?? "",
+      whatsappUrl: body.whatsappUrl ?? "",
+      discordUrl: body.discordUrl ?? "",
+      tiktokUrl: body.tiktokUrl ?? "",
     };
 
     const settings = await prisma.siteSettings.upsert({
