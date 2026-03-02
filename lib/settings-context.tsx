@@ -13,6 +13,10 @@ export interface SiteSettings {
   pixKey: string;
   pixBeneficiary: string;
   backgroundImage: string;
+  bannerUrl: string;
+  logoUrl: string;
+  faviconUrl: string;
+  ogImageUrl: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -26,6 +30,10 @@ const defaultSettings: SiteSettings = {
   pixKey: "",
   pixBeneficiary: "",
   backgroundImage: "",
+  bannerUrl: "",
+  logoUrl: "",
+  faviconUrl: "",
+  ogImageUrl: "",
 };
 
 interface SettingsContextType {
@@ -66,15 +74,31 @@ function applyThemeColors(settings: SiteSettings) {
     document.title = `${settings.storeName} — Contas de Jogos`;
   }
 
-  // Apply background image
+  // Apply background image with high quality rendering
   if (settings.backgroundImage) {
     document.body.style.backgroundImage = `url(${settings.backgroundImage})`;
     document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundPosition = "center center";
     document.body.style.backgroundAttachment = "fixed";
     document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.minHeight = "100vh";
+    (document.body.style as any).imageRendering = "high-quality";
+    (document.body.style as any).imageRendering = "-webkit-optimize-contrast";
   } else {
     document.body.style.backgroundImage = "";
+    document.body.style.minHeight = "";
+    (document.body.style as any).imageRendering = "";
+  }
+
+  // Apply dynamic favicon
+  if (settings.faviconUrl) {
+    let link = document.querySelector("link[rel='icon']") as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = settings.faviconUrl;
   }
 }
 

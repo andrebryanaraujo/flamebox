@@ -15,7 +15,11 @@ export default function Header() {
       <header className="header">
         <div className="header-inner">
           <Link href="/" className="logo">
-            <div className="logo-icon">{settings.logoIcon}</div>
+            {settings.logoUrl ? (
+              <img src={settings.logoUrl} alt={settings.storeName} style={{ width: 32, height: 32, borderRadius: 8, objectFit: "cover" }} />
+            ) : (
+              <div className="logo-icon">{settings.logoIcon}</div>
+            )}
             {settings.storeName}
           </Link>
 

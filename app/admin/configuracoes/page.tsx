@@ -28,6 +28,10 @@ export default function AdminConfiguracoesPage() {
     accentColor: "#a78bfa",
     contactEmail: "",
     backgroundImage: "",
+    bannerUrl: "",
+    logoUrl: "",
+    faviconUrl: "",
+    ogImageUrl: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -43,6 +47,10 @@ export default function AdminConfiguracoesPage() {
         accentColor: settings.accentColor || "#a78bfa",
         contactEmail: settings.contactEmail || "",
         backgroundImage: settings.backgroundImage || "",
+        bannerUrl: settings.bannerUrl || "",
+        logoUrl: settings.logoUrl || "",
+        faviconUrl: settings.faviconUrl || "",
+        ogImageUrl: settings.ogImageUrl || "",
       });
     }
   }, [loading, settings]);
@@ -306,6 +314,99 @@ export default function AdminConfiguracoesPage() {
                 />
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Store Media */}
+        <div className="admin-chart-card" style={{ gridColumn: "1 / -1" }}>
+          <h3 className="admin-chart-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <ImageIcon size={18} /> Mídias da Loja
+          </h3>
+          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "1.25rem" }}>
+            Configure as imagens que serão exibidas no site principal da loja.
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+            {/* Banner */}
+            <div className="form-group">
+              <label className="form-label">Banner da Loja</label>
+              <input
+                className="form-input"
+                placeholder="https://exemplo.com/banner.jpg"
+                value={form.bannerUrl}
+                onChange={(e) => setForm({ ...form, bannerUrl: e.target.value })}
+              />
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                Exibido no topo da página inicial. Recomendado: 1200×400px.
+              </div>
+              {form.bannerUrl && (
+                <div style={{ marginTop: "0.75rem", borderRadius: 10, overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                  <img src={form.bannerUrl} alt="Preview banner" style={{ width: "100%", height: 140, objectFit: "cover", display: "block" }} />
+                </div>
+              )}
+            </div>
+
+            {/* Logo Image */}
+            <div className="form-group">
+              <label className="form-label">Logo (Imagem)</label>
+              <input
+                className="form-input"
+                placeholder="https://exemplo.com/logo.png"
+                value={form.logoUrl}
+                onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
+              />
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                Substitui o emoji/letra no header quando preenchido. Recomendado: 128×128px.
+              </div>
+              {form.logoUrl && (
+                <div style={{ marginTop: "0.75rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 10, overflow: "hidden", border: "1px solid var(--border-color)", flexShrink: 0 }}>
+                    <img src={form.logoUrl} alt="Preview logo" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  </div>
+                  <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Preview do logo</span>
+                </div>
+              )}
+            </div>
+
+            {/* Favicon */}
+            <div className="form-group">
+              <label className="form-label">Favicon</label>
+              <input
+                className="form-input"
+                placeholder="https://exemplo.com/favicon.ico"
+                value={form.faviconUrl}
+                onChange={(e) => setForm({ ...form, faviconUrl: e.target.value })}
+              />
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                Ícone exibido na aba do navegador. Recomendado: 32×32px.
+              </div>
+              {form.faviconUrl && (
+                <div style={{ marginTop: "0.75rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 6, overflow: "hidden", border: "1px solid var(--border-color)", flexShrink: 0, background: "var(--bg-primary)" }}>
+                    <img src={form.faviconUrl} alt="Preview favicon" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                  </div>
+                  <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>Preview do favicon</span>
+                </div>
+              )}
+            </div>
+
+            {/* OG Image */}
+            <div className="form-group">
+              <label className="form-label">Imagem de Compartilhamento (Open Graph)</label>
+              <input
+                className="form-input"
+                placeholder="https://exemplo.com/og-image.jpg"
+                value={form.ogImageUrl}
+                onChange={(e) => setForm({ ...form, ogImageUrl: e.target.value })}
+              />
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                Imagem exibida ao compartilhar link nas redes sociais. Recomendado: 1200×630px.
+              </div>
+              {form.ogImageUrl && (
+                <div style={{ marginTop: "0.75rem", borderRadius: 10, overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                  <img src={form.ogImageUrl} alt="Preview OG" style={{ width: "100%", height: 120, objectFit: "cover", display: "block" }} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

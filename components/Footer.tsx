@@ -20,7 +20,11 @@ export default function Footer() {
         {/* Left: Description */}
         <div>
           <div className="footer-logo">
-            <div className="logo-icon" style={{ width: 28, height: 28, fontSize: "0.8rem", borderRadius: 6 }}>{settings.logoIcon}</div>
+            {settings.logoUrl ? (
+              <img src={settings.logoUrl} alt={settings.storeName} style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover" }} />
+            ) : (
+              <div className="logo-icon" style={{ width: 28, height: 28, fontSize: "0.8rem", borderRadius: 6 }}>{settings.logoIcon}</div>
+            )}
             {settings.storeName}
           </div>
           <p className="footer-desc">

@@ -39,6 +39,10 @@ export async function PUT(request: NextRequest) {
       pixKey: body.pixKey ?? "",
       pixBeneficiary: body.pixBeneficiary ?? "",
       backgroundImage: body.backgroundImage ?? "",
+      bannerUrl: body.bannerUrl ?? "",
+      logoUrl: body.logoUrl ?? "",
+      faviconUrl: body.faviconUrl ?? "",
+      ogImageUrl: body.ogImageUrl ?? "",
     };
 
     const settings = await prisma.siteSettings.upsert({

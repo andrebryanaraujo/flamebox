@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import CategoryCard from "@/components/CategoryCard";
+import HomeBanner from "@/components/HomeBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export default async function HomePage() {
 
   return (
     <div className="container-main">
+      <HomeBanner />
       <h1 className="section-title">Escolha o Jogo</h1>
       <div className="categories-grid">
         {categories.map((cat) => (
