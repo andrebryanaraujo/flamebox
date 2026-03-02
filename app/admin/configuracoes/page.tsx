@@ -1,6 +1,6 @@
 "use client";
 
-import { Save, Store, Palette, CreditCard, Bell, Shield, Check } from "lucide-react";
+import { Save, Store, Palette, Bell, Shield, Check } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 import { useState, useEffect } from "react";
 
@@ -26,8 +26,6 @@ export default function AdminConfiguracoesPage() {
     secondaryColor: "#6d28d9",
     accentColor: "#a78bfa",
     contactEmail: "",
-    pixKey: "",
-    pixBeneficiary: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -42,8 +40,6 @@ export default function AdminConfiguracoesPage() {
         secondaryColor: settings.secondaryColor || "#6d28d9",
         accentColor: settings.accentColor || "#a78bfa",
         contactEmail: settings.contactEmail || "",
-        pixKey: settings.pixKey || "",
-        pixBeneficiary: settings.pixBeneficiary || "",
       });
     }
   }, [loading, settings]);
@@ -279,30 +275,6 @@ export default function AdminConfiguracoesPage() {
           </div>
         </div>
 
-        {/* Payment */}
-        <div className="admin-chart-card">
-          <h3 className="admin-chart-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <CreditCard size={18} /> Pagamento
-          </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div className="form-group">
-              <label className="form-label">Chave PIX</label>
-              <input
-                className="form-input"
-                value={form.pixKey}
-                onChange={(e) => setForm({ ...form, pixKey: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Nome do Beneficiário</label>
-              <input
-                className="form-input"
-                value={form.pixBeneficiary}
-                onChange={(e) => setForm({ ...form, pixBeneficiary: e.target.value })}
-              />
-            </div>
-          </div>
-        </div>
 
         {/* Notifications */}
         <div className="admin-chart-card">
