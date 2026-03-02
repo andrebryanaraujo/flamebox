@@ -38,11 +38,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   // Group products by subcategory
   const grouped = category.subcategories.map((subcat: { slug: string; id: string; name: string }) => ({
     ...subcat,
-    products: allProducts.filter((p) => p.subcategoryId === subcat.id),
+    products: allProducts.filter((p: { subcategoryId: string | null }) => p.subcategoryId === subcat.id),
   }));
 
   // Products without subcategory
-  const ungrouped = allProducts.filter((p) => !p.subcategoryId);
+  const ungrouped = allProducts.filter((p: { subcategoryId: string | null }) => !p.subcategoryId);
 
   // If sub filter is active, show only that subcategory
   const displayed = sub
