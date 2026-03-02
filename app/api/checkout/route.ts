@@ -31,6 +31,10 @@ export async function POST(request: NextRequest) {
       ? `Pedido: ${items.map((i: { productName: string; quantity: number }) => `${i.quantity}x ${i.productName}`).join(", ")}`
       : "Pagamento de pedido";
 
+    // Build webhook URL from request origin
+    const origin = request.headers.get("origin") || request.headers.get("referer")?.replace(/\/[^/]*$/, "") || "";
+    const webhookUrl = `${origin}/api/webhook/misticpay`;
+
     const misticRes = await fetch("https://api.misticpay.com/api/transactions/create", {
       method: "POST",
       headers: {
@@ -44,6 +48,7 @@ export async function POST(request: NextRequest) {
         payerDocument: payerDocument.replace(/\D/g, ""), // Remove formatting
         transactionId,
         description,
+        webhookUrl,
       }),
     });
 

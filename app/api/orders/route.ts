@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         customerEmail: parsed.data.customerEmail,
         total: parsed.data.total,
         paymentMethod: parsed.data.paymentMethod ?? "PIX",
+        transactionId: parsed.data.transactionId ?? null,
         items: {
           create: parsed.data.items.map((item) => ({
             productId: item.productId,

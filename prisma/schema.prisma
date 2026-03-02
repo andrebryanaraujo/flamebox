@@ -65,6 +65,7 @@ model Order {
   total         Float
   status        String   @default("Pendente") // Pendente, Processando, Entregue, Cancelado
   paymentMethod String   @default("PIX")
+  transactionId String?  @unique // MisticPay transaction ID
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -97,6 +98,7 @@ model SiteSettings {
   contactEmail   String   @default("contato@nylived.com")
   pixKey         String   @default("")
   pixBeneficiary String   @default("")
+  backgroundImage String  @default("")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

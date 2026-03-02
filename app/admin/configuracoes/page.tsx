@@ -1,8 +1,9 @@
 "use client";
 
-import { Save, Store, Palette, Bell, Shield, Check } from "lucide-react";
+import { Save, Store, Palette, Bell, Shield, Check, ImageIcon } from "lucide-react";
 import { useSettings } from "@/lib/settings-context";
 import { useState, useEffect } from "react";
+import style from "styled-jsx/style";
 
 const presetColors = [
   { name: "Roxo", primary: "#7c3aed", secondary: "#6d28d9", accent: "#a78bfa" },
@@ -26,6 +27,7 @@ export default function AdminConfiguracoesPage() {
     secondaryColor: "#6d28d9",
     accentColor: "#a78bfa",
     contactEmail: "",
+    backgroundImage: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -40,6 +42,7 @@ export default function AdminConfiguracoesPage() {
         secondaryColor: settings.secondaryColor || "#6d28d9",
         accentColor: settings.accentColor || "#a78bfa",
         contactEmail: settings.contactEmail || "",
+        backgroundImage: settings.backgroundImage || "",
       });
     }
   }, [loading, settings]);
@@ -275,6 +278,36 @@ export default function AdminConfiguracoesPage() {
           </div>
         </div>
 
+
+        {/* Background Image */}
+        <div className="admin-chart-card">
+          <h3 className="admin-chart-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <ImageIcon size={18} /> Imagem de Fundo
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div className="form-group">
+              <label className="form-label">URL da Imagem</label>
+              <input
+                className="form-input"
+                placeholder="https://exemplo.com/background.jpg"
+                value={form.backgroundImage}
+                onChange={(e) => setForm({ ...form, backgroundImage: e.target.value })}
+              />
+              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                Cole a URL de uma imagem para usar como fundo da loja. Deixe vazio para usar o fundo padrão.
+              </div>
+            </div>
+            {form.backgroundImage && (
+              <div style={{ borderRadius: 10, overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                <img
+                  src={form.backgroundImage}
+                  alt="Preview do fundo"
+                  style={{ width: "100%", height: 160, objectFit: "cover", display: "block" }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Notifications */}
         <div className="admin-chart-card">

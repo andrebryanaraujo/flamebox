@@ -38,6 +38,7 @@ export async function PUT(request: NextRequest) {
       contactEmail: body.contactEmail ?? "",
       pixKey: body.pixKey ?? "",
       pixBeneficiary: body.pixBeneficiary ?? "",
+      backgroundImage: body.backgroundImage ?? "",
     };
 
     const settings = await prisma.siteSettings.upsert({

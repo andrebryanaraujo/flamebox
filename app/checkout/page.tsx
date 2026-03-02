@@ -112,6 +112,7 @@ export default function CheckoutPage() {
           customerEmail: "cliente@email.com",
           total: savedTotal.current,
           paymentMethod: "PIX",
+          transactionId: data.transactionId,
           items: getItemsPayload(),
         }),
       });

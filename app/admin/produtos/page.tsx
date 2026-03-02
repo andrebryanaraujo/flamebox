@@ -6,6 +6,12 @@ import { useEffect, useState, useCallback } from "react";
 import Modal, { ModalFormGroup, ModalInput, ModalSelect, ModalTextarea, ModalRow, ModalActions, ModalBtnPrimary, ModalBtnSecondary, ModalError } from "@/components/Modal";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
+interface Subcategory {
+  id: string;
+  slug: string;
+  name: string;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -15,7 +21,9 @@ interface Product {
   description: string;
   categorySlug: string;
   categoryId: string;
+  subcategoryId?: string | null;
   category?: { name: string; emoji: string | null };
+  subcategory?: Subcategory | null;
 }
 
 interface Category {
@@ -23,6 +31,7 @@ interface Category {
   slug: string;
   name: string;
   emoji: string | null;
+  subcategories: Subcategory[];
 }
 
 function formatPrice(price: number) {
@@ -36,6 +45,7 @@ const emptyForm = {
   description: "",
   image: "",
   categoryId: "",
+  subcategoryId: "",
 };
 
 export default function AdminProdutosPage() {
@@ -98,6 +108,7 @@ export default function AdminProdutosPage() {
         image: form.image || "/placeholder.png",
         categoryId: form.categoryId,
         categorySlug: cat?.slug || "",
+        subcategoryId: form.subcategoryId || null,
       }),
     });
 
@@ -119,6 +130,7 @@ export default function AdminProdutosPage() {
       price: String(product.price),
       stock: String(product.stock),
       categoryId: product.categoryId,
+      subcategoryId: product.subcategoryId || "",
       image: product.image,
       description: product.description,
     });
@@ -146,6 +158,7 @@ export default function AdminProdutosPage() {
         image: form.image || "/placeholder.png",
         categoryId: form.categoryId,
         categorySlug: cat?.slug || "",
+        subcategoryId: form.subcategoryId || null,
       }),
     });
     if (res.ok) {
@@ -272,13 +285,28 @@ export default function AdminProdutosPage() {
           </ModalFormGroup>
         </ModalRow>
         <ModalFormGroup label="Categoria" required>
-          <ModalSelect value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}>
+          <ModalSelect value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value, subcategoryId: "" })}>
             <option value="">Selecione...</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>{cat.emoji} {cat.name}</option>
             ))}
           </ModalSelect>
         </ModalFormGroup>
+        {form.categoryId && (() => {
+          const selectedCat = categories.find((c) => c.id === form.categoryId);
+          const subs = selectedCat?.subcategories || [];
+          if (subs.length === 0) return null;
+          return (
+            <ModalFormGroup label="Subcategoria">
+              <ModalSelect value={form.subcategoryId} onChange={(e) => setForm({ ...form, subcategoryId: e.target.value })}>
+                <option value="">Nenhuma (sem subcategoria)</option>
+                {subs.map((sub) => (
+                  <option key={sub.id} value={sub.id}>{sub.name}</option>
+                ))}
+              </ModalSelect>
+            </ModalFormGroup>
+          );
+        })()}
         <ModalFormGroup label="URL da Imagem">
           <ModalInput placeholder="https://..." value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
         </ModalFormGroup>

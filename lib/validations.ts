@@ -37,5 +37,6 @@ export const orderSchema = z.object({
   customerEmail: z.string().email("E-mail inválido"),
   total: z.number().positive("Total inválido"),
   paymentMethod: z.string().default("PIX"),
+  transactionId: z.string().optional(),
   items: z.array(orderItemSchema).min(1, "O pedido deve ter pelo menos 1 item"),
 });

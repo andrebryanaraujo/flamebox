@@ -12,6 +12,7 @@ export interface SiteSettings {
   contactEmail: string;
   pixKey: string;
   pixBeneficiary: string;
+  backgroundImage: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -24,6 +25,7 @@ const defaultSettings: SiteSettings = {
   contactEmail: "",
   pixKey: "",
   pixBeneficiary: "",
+  backgroundImage: "",
 };
 
 interface SettingsContextType {
@@ -62,6 +64,17 @@ function applyThemeColors(settings: SiteSettings) {
   // Update page title
   if (settings.storeName) {
     document.title = `${settings.storeName} — Contas de Jogos`;
+  }
+
+  // Apply background image
+  if (settings.backgroundImage) {
+    document.body.style.backgroundImage = `url(${settings.backgroundImage})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.backgroundRepeat = "no-repeat";
+  } else {
+    document.body.style.backgroundImage = "";
   }
 }
 
