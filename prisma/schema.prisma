@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  emoji     String?
+  image     String
+  banner    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subcategories Subcategory[]
+  products      Product[]
+}
+
+model Subcategory {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  name       String
+  categoryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  // Ensure slug is unique per category (or globally if you prefer, @unique handles global)
+  @@index([categoryId])
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  price         Float
+  stock         Int      @default(0)
+  description   String
+  image         String
+  categorySlug  String
+  categoryId    String
+  subcategoryId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subcategory Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  orderItems OrderItem[]
+
+  @@index([categorySlug])
+  @@index([subcategoryId])
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique // e.g. NV-2841
+  customerName  String
+  customerEmail String
+  total         Float
+  status        String   @default("Pendente") // Pendente, Processando, Entregue, Cancelado
+  paymentMethod String   @default("PIX")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  price     Float
+  quantity  Int      @default(1)
+  productName String // Snapshot of name at purchase
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model SiteSettings {
+  id             String   @id @default("default")
+  storeName      String   @default("NYLIVED")
+  storeDescription String @default("Na NYLIVED você encontra as contas mais procuradas de jogos...")
+  logoIcon       String   @default("N")
+  primaryColor   String   @default("#7c3aed") // purple
+  secondaryColor String   @default("#6d28d9")
+  accentColor    String   @default("#a78bfa")
+  contactEmail   String   @default("contato@nylived.com")
+  pixKey         String   @default("")
+  pixBeneficiary String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
