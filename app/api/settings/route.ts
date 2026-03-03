@@ -47,6 +47,8 @@ export async function PUT(request: NextRequest) {
       whatsappUrl: body.whatsappUrl ?? "",
       discordUrl: body.discordUrl ?? "",
       tiktokUrl: body.tiktokUrl ?? "",
+      footerBgColor: body.footerBgColor ?? "",
+      footerTextColor: body.footerTextColor ?? "",
     };
 
     const settings = await prisma.siteSettings.upsert({

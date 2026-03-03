@@ -36,6 +36,8 @@ export default function AdminConfiguracoesPage() {
     whatsappUrl: "",
     discordUrl: "",
     tiktokUrl: "",
+    footerBgColor: "",
+    footerTextColor: "",
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -59,6 +61,8 @@ export default function AdminConfiguracoesPage() {
         whatsappUrl: settings.whatsappUrl || "",
         discordUrl: settings.discordUrl || "",
         tiktokUrl: settings.tiktokUrl || "",
+        footerBgColor: settings.footerBgColor || "",
+        footerTextColor: settings.footerTextColor || "",
       });
     }
   }, [loading, settings]);
@@ -294,6 +298,52 @@ export default function AdminConfiguracoesPage() {
           </div>
         </div>
 
+        {/* Footer Colors */}
+        <div style={{ marginTop: "1.25rem" }}>
+          <label className="form-label" style={{ marginBottom: "0.6rem", fontSize: "0.85rem" }}>Cores do Rodapé</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div className="form-group">
+              <label className="form-label">Fundo do Rodapé</label>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <input
+                  type="color"
+                  value={form.footerBgColor || "#111111"}
+                  onChange={(e) => setForm({ ...form, footerBgColor: e.target.value })}
+                  style={{ width: 36, height: 32, border: "none", cursor: "pointer", borderRadius: 6, padding: 0 }}
+                />
+                <input
+                  className="form-input"
+                  placeholder="Padrão do tema"
+                  value={form.footerBgColor}
+                  onChange={(e) => setForm({ ...form, footerBgColor: e.target.value })}
+                  style={{ flex: 1, fontFamily: "monospace", fontSize: "0.78rem" }}
+                />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Texto do Rodapé</label>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <input
+                  type="color"
+                  value={form.footerTextColor || "#ffffff"}
+                  onChange={(e) => setForm({ ...form, footerTextColor: e.target.value })}
+                  style={{ width: 36, height: 32, border: "none", cursor: "pointer", borderRadius: 6, padding: 0 }}
+                />
+                <input
+                  className="form-input"
+                  placeholder="Padrão do tema"
+                  value={form.footerTextColor}
+                  onChange={(e) => setForm({ ...form, footerTextColor: e.target.value })}
+                  style={{ flex: 1, fontFamily: "monospace", fontSize: "0.78rem" }}
+                />
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.35rem" }}>
+            Deixe em branco para usar as cores padrão do tema.
+          </div>
+        </div>
+
 
         {/* Background Image */}
         <div className="admin-chart-card">
@@ -519,7 +569,7 @@ export default function AdminConfiguracoesPage() {
             </span>
           )}
         </div>
-      </div>
+      </div >
     </>
   );
 }

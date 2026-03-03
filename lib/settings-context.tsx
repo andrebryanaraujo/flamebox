@@ -21,6 +21,8 @@ export interface SiteSettings {
   whatsappUrl: string;
   discordUrl: string;
   tiktokUrl: string;
+  footerBgColor: string;
+  footerTextColor: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -42,6 +44,8 @@ const defaultSettings: SiteSettings = {
   whatsappUrl: "",
   discordUrl: "",
   tiktokUrl: "",
+  footerBgColor: "",
+  footerTextColor: "",
 };
 
 interface SettingsContextType {

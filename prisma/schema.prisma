@@ -107,6 +107,8 @@ model SiteSettings {
   whatsappUrl     String  @default("")
   discordUrl      String  @default("")
   tiktokUrl       String  @default("")
+  footerBgColor   String  @default("")
+  footerTextColor String  @default("")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

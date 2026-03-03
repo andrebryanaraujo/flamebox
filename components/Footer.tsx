@@ -42,7 +42,16 @@ export default function Footer() {
   ].filter((s) => s.url);
 
   return (
-    <footer className="footer">
+    <footer
+      className="footer"
+      style={{
+        ...(settings.footerBgColor ? { background: settings.footerBgColor } : {}),
+        ...(settings.footerTextColor ? {
+          color: settings.footerTextColor,
+          ["--footer-text" as string]: settings.footerTextColor,
+        } : {}),
+      }}
+    >
       <div className="footer-inner">
         {/* Left: Description */}
         <div>

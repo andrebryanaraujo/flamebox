@@ -29,7 +29,7 @@ export default function ProductPage({ params }: Props) {
   const { id } = use(params);
   const { addItem } = useCart();
   const [product, setProduct] = useState<ProductData | null>(null);
-  const [related, setRelated] = useState<ProductData[]>([]);
+  const [allVariants, setAllVariants] = useState<ProductData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,15 +39,14 @@ export default function ProductPage({ params }: Props) {
         setProduct(data);
         setLoading(false);
 
-        // Fetch related products from same subcategory or category
-        const filterParam = data.subcategoryId
-          ? `subcategoryId=${data.subcategoryId}`
-          : `categoryId=${data.categoryId}`;
-        fetch(`/api/products?${filterParam}`)
-          .then((res) => res.json())
-          .then((products: ProductData[]) => {
-            setRelated(products.filter((p) => p.id !== data.id).slice(0, 8));
-          });
+        // Fetch all products from same subcategory (if exists)
+        if (data.subcategoryId) {
+          fetch(`/api/products?subcategoryId=${data.subcategoryId}`)
+            .then((res) => res.json())
+            .then((products: ProductData[]) => {
+              setAllVariants(products);
+            });
+        }
       })
       .catch(() => setLoading(false));
   }, [id]);
@@ -123,11 +122,11 @@ export default function ProductPage({ params }: Props) {
           <p className="product-detail-desc">{product.description}</p>
 
           {/* Variations Panel */}
-          {related.length > 0 && (
+          {product.subcategoryId && allVariants.length > 0 && (
             <ProductVariations
               currentProductId={product.id}
-              variants={[product, ...related]}
-              title={product.subcategory?.name || "Produtos"}
+              variants={allVariants}
+              title={product.subcategory?.name || "Variações"}
             />
           )}
 
