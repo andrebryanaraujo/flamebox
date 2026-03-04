@@ -17,6 +17,7 @@ export const subcategorySchema = z.object({
 export const productSchema = z.object({
   name: z.string().min(3, "O nome do produto é muito curto").max(100),
   price: z.number().positive("O preço deve ser maior que zero"),
+  discount: z.number().min(0).max(100).optional().nullable(),
   stock: z.number().int().nonnegative("O estoque não pode ser negativo"),
   description: z.string().min(10, "A descrição deve ter pelo menos 10 caracteres"),
   image: z.string().min(1, "A imagem é obrigatória"),

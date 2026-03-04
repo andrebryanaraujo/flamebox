@@ -17,6 +17,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
+  discount?: number | null;
   stock: number;
   image: string;
   images: string[];
@@ -45,6 +46,7 @@ function formatPrice(price: number) {
 const emptyForm = {
   name: "",
   price: "",
+  discount: "",
   stock: "",
   description: "",
   image: "",
@@ -110,6 +112,7 @@ export default function AdminProdutosPage() {
       body: JSON.stringify({
         name: form.name,
         price: parseFloat(form.price),
+        discount: form.discount !== "" ? parseFloat(form.discount) : null,
         stock: parseInt(form.stock || "0"),
         description: form.description || "Sem descrição",
         image: form.image || "/placeholder.png",
@@ -140,6 +143,7 @@ export default function AdminProdutosPage() {
     setForm({
       name: product.name,
       price: String(product.price),
+      discount: product.discount != null ? String(product.discount) : "",
       stock: String(product.stock),
       categoryId: product.categoryId,
       subcategoryId: product.subcategoryId || "",
@@ -168,6 +172,7 @@ export default function AdminProdutosPage() {
       body: JSON.stringify({
         name: form.name,
         price: parseFloat(form.price),
+        discount: form.discount !== "" ? parseFloat(form.discount) : null,
         stock: parseInt(form.stock || "0"),
         description: form.description || "Sem descrição",
         image: form.image || "/placeholder.png",
@@ -299,6 +304,9 @@ export default function AdminProdutosPage() {
         <ModalRow>
           <ModalFormGroup label="Preço (R$)" required>
             <ModalInput type="number" step="0.01" placeholder="0,00" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+          </ModalFormGroup>
+          <ModalFormGroup label="Desconto (%)">
+            <ModalInput type="number" step="1" min="0" max="100" placeholder="ex: 20" value={form.discount} onChange={(e) => setForm({ ...form, discount: e.target.value })} />
           </ModalFormGroup>
           <ModalFormGroup label="Estoque">
             <ModalInput type="number" placeholder="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />

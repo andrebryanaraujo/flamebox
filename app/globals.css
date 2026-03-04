@@ -632,6 +632,39 @@ main {
   object-fit: cover;
 }
 
+/* Discount badge over thumbnail */
+.product-card-discount-badge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
+  line-height: 1.4;
+  z-index: 2;
+}
+
+/* Price block when discount is active */
+.product-card-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Original (crossed-out) price */
+.product-card-price-old {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  line-height: 1;
+}
+
+
 /* Right side info */
 .product-card-info {
   display: flex;

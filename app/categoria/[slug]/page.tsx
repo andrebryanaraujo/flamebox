@@ -34,6 +34,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     id: p.id,
     name: p.name,
     price: p.price,
+    discount: p.discount ?? null,
     stock: p.stock,
     description: p.description,
     image: p.image,
