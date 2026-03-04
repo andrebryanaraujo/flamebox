@@ -892,8 +892,7 @@ main {
 }
 
 .product-detail-image-wrapper {
-  position: sticky;
-  top: 100px;
+  /* sticky only on desktop — see @media min-width:901px below */
 }
 
 .product-detail-image {
@@ -1954,7 +1953,6 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .product-detail-image-wrapper,
   .product-detail-sidebar {
     position: static;
   }
@@ -3084,11 +3082,19 @@ main {
    Product Image Carousel
    ============================ */
 .img-carousel-wrapper {
-  position: sticky;
-  top: 100px;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+/* Sticky image only on desktop */
+@media (min-width: 901px) {
+
+  .product-detail-image-wrapper,
+  .img-carousel-wrapper {
+    position: sticky;
+    top: 100px;
+  }
 }
 
 .img-carousel-stage {

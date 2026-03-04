@@ -117,7 +117,8 @@ export default function CheckoutPage() {
         }),
       });
       if (!orderRes.ok) {
-        const orderErr = await orderRes.json().catch(() => ({}));
+        const orderErr = await orderRes.json().catch(() => ({ error: "Erro ao registrar pedido." }));
+        // Log for debugging — PIX was already generated so we still show QR
         console.error("Erro ao criar pedido:", orderErr);
       }
 
