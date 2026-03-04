@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import CategoryCard from "@/components/CategoryCard";
 import HomeBanner from "@/components/HomeBanner";
+import ReferencesCarousel from "@/components/ReferencesCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ export default async function HomePage() {
           <CategoryCard key={cat.slug} category={cat} />
         ))}
       </div>
+      <ReferencesCarousel />
     </div>
   );
 }
