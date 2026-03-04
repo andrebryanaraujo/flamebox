@@ -61,8 +61,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     setUser(null);
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch { }
   }, []);
 
   const isAuthenticated = !!user;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
+import { signToken, setAdminCookie } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -32,11 +33,23 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({
+    // Generate JWT token
+    const token = await signToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    // Build response with cookie
+    const response = NextResponse.json({
       email: user.email,
       name: user.name,
       role: user.role,
     });
+
+    setAdminCookie(response, token);
+
+    return response;
   } catch {
     return NextResponse.json(
       { error: "Erro interno do servidor" },

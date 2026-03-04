@@ -17,6 +17,7 @@ interface ProductData {
   id: string;
   name: string;
   price: number;
+  discount?: number | null;
   stock: number;
   description: string;
   image: string;

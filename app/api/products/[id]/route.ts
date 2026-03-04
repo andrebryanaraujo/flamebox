@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validations";
+import { requireAdmin } from "@/lib/auth";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -31,6 +32,9 @@ export async function GET(_request: NextRequest, { params }: Params) {
 
 // PUT /api/products/[id]
 export async function PUT(request: NextRequest, { params }: Params) {
+  const auth = await requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -57,6 +61,9 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
 // DELETE /api/products/[id]
 export async function DELETE(_request: NextRequest, { params }: Params) {
+  const auth = await requireAdmin(_request);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { id } = await params;
     await prisma.product.delete({ where: { id } });

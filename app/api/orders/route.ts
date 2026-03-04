@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { orderSchema } from "@/lib/validations";
 import { Prisma } from "@prisma/client";
+import { requireAdmin } from "@/lib/auth";
 
 // GET /api/orders — list orders (admin)
 export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");

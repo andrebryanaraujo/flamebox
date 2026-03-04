@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
@@ -10,6 +10,7 @@ interface VariantProduct {
   id: string;
   name: string;
   price: number;
+  discount?: number | null;
   stock: number;
   image: string;
 }
@@ -20,19 +21,19 @@ interface Props {
   title: string;
 }
 
-function VariationPriceDisplay({ price, maxPrice }: { price: number; maxPrice: number }) {
-  const hasDiscount = maxPrice > price;
-  const discountPct = hasDiscount ? Math.round(((maxPrice - price) / maxPrice) * 100) : 0;
+function VariationPriceDisplay({ price, discount }: { price: number; discount?: number | null }) {
+  const hasDiscount = discount != null && discount > 0;
+  const discountedPrice = hasDiscount ? price * (1 - discount / 100) : price;
 
   return (
     <div className="variation-pricing">
       {hasDiscount && (
         <>
-          <div className="variation-price-old">{formatPrice(maxPrice)}</div>
-          <span className="variation-discount">-{discountPct}%</span>
+          <div className="variation-price-old">{formatPrice(price)}</div>
+          <span className="variation-discount">-{discount}%</span>
         </>
       )}
-      <div className="variation-price">{formatPrice(price)}</div>
+      <div className="variation-price">{formatPrice(discountedPrice)}</div>
     </div>
   );
 }
@@ -44,12 +45,6 @@ export default function ProductVariations({ currentProductId, variants, title }:
 
   const current = variants.find((v) => v.id === currentProductId);
   const others = variants.filter((v) => v.id !== currentProductId);
-
-  // Calculate the max price among all variants for discount display
-  const maxPrice = useMemo(
-    () => Math.max(...variants.map((v) => v.price)),
-    [variants]
-  );
 
   const filtered = others.filter((v) =>
     v.name.toLowerCase().includes(search.toLowerCase())
@@ -80,7 +75,7 @@ export default function ProductVariations({ currentProductId, variants, title }:
                 Disponível ( {current.stock} )
               </div>
             </div>
-            <VariationPriceDisplay price={current.price} maxPrice={maxPrice} />
+            <VariationPriceDisplay price={current.price} discount={current.discount} />
           </div>
         </div>
       )}
@@ -124,7 +119,7 @@ export default function ProductVariations({ currentProductId, variants, title }:
                     Disponível ( {variant.stock} )
                   </div>
                 </div>
-                <VariationPriceDisplay price={variant.price} maxPrice={maxPrice} />
+                <VariationPriceDisplay price={variant.price} discount={variant.discount} />
               </div>
             </Link>
           ))}

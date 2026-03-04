@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validations";
+import { requireAdmin } from "@/lib/auth";
 
 // GET /api/products — List all products (with optional filters)
 export async function GET(request: NextRequest) {
@@ -39,6 +40,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/products — Create a product
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await request.json();
     const parsed = productSchema.safeParse(body);

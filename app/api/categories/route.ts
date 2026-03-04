@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { categorySchema } from "@/lib/validations";
+import { requireAdmin } from "@/lib/auth";
 
 // GET /api/categories — list all categories with subcategories
 export async function GET() {
@@ -26,6 +27,9 @@ export async function GET() {
 
 // POST /api/categories — create a category
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await request.json();
     const parsed = categorySchema.safeParse(body);
