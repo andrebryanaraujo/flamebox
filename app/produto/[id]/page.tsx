@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, CreditCard } from "lucide-react";
+import { ShoppingCart, Zap, CreditCard, Minus, Plus } from "lucide-react";
 import { formatPrice } from "@/lib/data";
 import { useCart } from "@/lib/cart-context";
 import { use, useState, useEffect } from "react";
 import ProductVariations from "@/components/ProductVariations";
+import ProductImageCarousel from "@/components/ProductImageCarousel";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -19,9 +20,11 @@ interface ProductData {
   stock: number;
   description: string;
   image: string;
+  images: string[];
   categorySlug: string;
   categoryId: string;
   subcategoryId: string | null;
+  variantGroupId: string | null;
   subcategory?: { id: string; name: string; slug: string } | null;
 }
 
@@ -31,6 +34,7 @@ export default function ProductPage({ params }: Props) {
   const [product, setProduct] = useState<ProductData | null>(null);
   const [allVariants, setAllVariants] = useState<ProductData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     fetch(`/api/products/${id}`)
@@ -39,9 +43,8 @@ export default function ProductPage({ params }: Props) {
         setProduct(data);
         setLoading(false);
 
-        // Fetch all products from same subcategory (if exists)
-        if (data.subcategoryId) {
-          fetch(`/api/products?subcategoryId=${data.subcategoryId}`)
+        if (data.variantGroupId) {
+          fetch(`/api/products?variantGroupId=${data.variantGroupId}`)
             .then((res) => res.json())
             .then((products: ProductData[]) => {
               setAllVariants(products);
@@ -51,6 +54,11 @@ export default function ProductPage({ params }: Props) {
       .catch(() => setLoading(false));
   }, [id]);
 
+  // Reset quantity when product changes
+  useEffect(() => {
+    setQuantity(1);
+  }, [id]);
+
   if (loading) {
     return (
       <div className="container-main">
@@ -58,18 +66,14 @@ export default function ProductPage({ params }: Props) {
           <div className="skeleton" style={{ width: "200px", height: "16px", borderRadius: "4px" }} />
         </div>
         <div className="product-detail">
-          <div className="skeleton" style={{ width: "100%", height: "450px", borderRadius: "12px" }} />
+          <div className="skeleton" style={{ width: "100%", height: "400px", borderRadius: "12px" }} />
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div className="skeleton" style={{ width: "80%", height: "32px", borderRadius: "6px" }} />
-            <div className="skeleton" style={{ width: "30%", height: "24px", borderRadius: "4px" }} />
-            <div className="skeleton" style={{ width: "150px", height: "18px", borderRadius: "4px" }} />
-            <div style={{ marginTop: "1rem" }}>
-              <div className="skeleton" style={{ width: "100%", height: "16px", borderRadius: "4px", marginBottom: "0.5rem" }} />
-              <div className="skeleton" style={{ width: "90%", height: "16px", borderRadius: "4px", marginBottom: "0.5rem" }} />
-              <div className="skeleton" style={{ width: "95%", height: "16px", borderRadius: "4px" }} />
-            </div>
-            <div className="skeleton" style={{ width: "200px", height: "44px", borderRadius: "8px", marginTop: "1rem" }} />
+            <div className="skeleton" style={{ width: "40%", height: "28px", borderRadius: "4px" }} />
+            <div className="skeleton" style={{ width: "150px", height: "30px", borderRadius: "20px" }} />
+            <div className="skeleton" style={{ width: "100%", height: "200px", borderRadius: "12px" }} />
           </div>
+          <div className="skeleton" style={{ width: "100%", height: "350px", borderRadius: "12px" }} />
         </div>
       </div>
     );
@@ -85,6 +89,16 @@ export default function ProductPage({ params }: Props) {
   }
 
   const inStock = product.stock > 0;
+  const maxQty = Math.min(product.stock, 99);
+
+  const handleDecrement = () => setQuantity((q) => Math.max(1, q - 1));
+  const handleIncrement = () => setQuantity((q) => Math.min(maxQty, q + 1));
+
+  const handleAddToCart = () => {
+    for (let i = 0; i < quantity; i++) {
+      addItem(product);
+    }
+  };
 
   return (
     <div className="container-main">
@@ -97,56 +111,102 @@ export default function ProductPage({ params }: Props) {
       </div>
 
       <div className="product-detail">
-        <Image
-          src={product.image}
+        {/* Column 1: Product Image Carousel */}
+        <ProductImageCarousel
+          images={[product.image, ...(product.images ?? [])].filter(Boolean)}
           alt={product.name}
-          width={600}
-          height={450}
-          className="product-detail-image"
         />
 
+        {/* Column 2: Product Info + Variations */}
         <div className="product-detail-info">
           <h1 className="product-detail-name">{product.name}</h1>
 
-          <div className="product-detail-price">{formatPrice(product.price)}</div>
-          <div className="product-detail-pix">À vista no PIX</div>
-
-          <div className="product-detail-stock">
-            <span className={`dot ${inStock ? "in" : "out"}`} />
-            {inStock
-              ? <span style={{ color: "var(--green-online)" }}>{product.stock} em estoque</span>
-              : <span style={{ color: "#ef4444" }}>Esgotado</span>
-            }
+          <div className="product-detail-price-row">
+            <span className="product-detail-price">{formatPrice(product.price)}</span>
           </div>
 
-          <p className="product-detail-desc">{product.description}</p>
+          <div className="delivery-badge">
+            <Zap size={14} />
+            Entrega Automática
+          </div>
+
+          {product.description && (
+            <p className="product-detail-desc">{product.description}</p>
+          )}
 
           {/* Variations Panel */}
-          {product.subcategoryId && allVariants.length > 0 && (
+          {product.variantGroupId && allVariants.length > 0 && (
             <ProductVariations
               currentProductId={product.id}
               variants={allVariants}
-              title={product.subcategory?.name || "Variações"}
+              title="Variações"
             />
           )}
+        </div>
 
-          <button
-            className="btn-add-cart"
-            disabled={!inStock}
-            onClick={() => addItem(product)}
-          >
-            <ShoppingCart size={18} />
-            Adicionar ao Carrinho
-          </button>
-
-          <div className="pix-info">
-            <div className="pix-info-title">
-              <CreditCard size={16} /> Pagamento via PIX
+        {/* Column 3: Purchase Sidebar */}
+        <div className="product-detail-sidebar">
+          <div className="sidebar-stock-section">
+            <div className="sidebar-stock-label">
+              {inStock ? "Estoque disponível" : "Esgotado"}
             </div>
-            <p className="pix-info-text">
-              Pague via PIX e receba sua conta instantaneamente após a confirmação do pagamento.
-              O PIX é processado em segundos e é a forma mais rápida de pagamento.
-            </p>
+            <div className="sidebar-stock-price">{formatPrice(product.price)}</div>
+            <div className="sidebar-stock-count">
+              <span className={`dot ${inStock ? "in" : "out"}`} />
+              {inStock ? (
+                <span>{product.stock} Disponível</span>
+              ) : (
+                <span style={{ color: "#ef4444" }}>Indisponível</span>
+              )}
+            </div>
+          </div>
+
+          {inStock && (
+            <div className="qty-selector">
+              <button
+                className="qty-selector-btn"
+                onClick={handleDecrement}
+                disabled={quantity <= 1}
+              >
+                <Minus size={16} />
+              </button>
+              <span className="qty-selector-value">{quantity}</span>
+              <button
+                className="qty-selector-btn"
+                onClick={handleIncrement}
+                disabled={quantity >= maxQty}
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          )}
+
+          <div className="sidebar-actions">
+            <button
+              className="btn-buy-now"
+              disabled={!inStock}
+              onClick={handleAddToCart}
+            >
+              Comprar agora
+            </button>
+            <button
+              className="btn-add-cart"
+              disabled={!inStock}
+              onClick={handleAddToCart}
+            >
+              <ShoppingCart size={16} />
+              Adicionar ao carrinho
+            </button>
+          </div>
+
+          <div className="sidebar-payment-methods">
+            <div className="sidebar-payment-title">Meios de pagamentos</div>
+            <div className="sidebar-payment-options">
+              <div className="sidebar-payment-option">
+                <span>À vista</span>
+                <CreditCard size={18} className="pix-icon" />
+              </div>
+            </div>
           </div>
         </div>
       </div>

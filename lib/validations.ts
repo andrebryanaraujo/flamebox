@@ -20,9 +20,12 @@ export const productSchema = z.object({
   stock: z.number().int().nonnegative("O estoque não pode ser negativo"),
   description: z.string().min(10, "A descrição deve ter pelo menos 10 caracteres"),
   image: z.string().min(1, "A imagem é obrigatória"),
+  cardBackground: z.string().optional(),
   categorySlug: z.string().min(1, "Categoria é obrigatória"),
   categoryId: z.string().min(1, "ID de categoria inválido"),
   subcategoryId: z.string().min(1).optional().nullable(),
+  variantGroupId: z.string().optional().nullable(),
+  images: z.array(z.string()).optional(),
 });
 
 export const orderItemSchema = z.object({

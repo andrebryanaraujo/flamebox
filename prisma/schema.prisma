@@ -36,17 +36,20 @@ model Subcategory {
 }
 
 model Product {
-  id            String   @id @default(cuid())
-  name          String
-  price         Float
-  stock         Int      @default(0)
-  description   String
-  image         String
-  categorySlug  String
-  categoryId    String
-  subcategoryId String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  price          Float
+  stock          Int      @default(0)
+  description    String
+  image          String
+  images         String[]
+  cardBackground String   @default("")
+  categorySlug   String
+  categoryId     String
+  subcategoryId  String?
+  variantGroupId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   category    Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   subcategory Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
@@ -55,6 +58,7 @@ model Product {
 
   @@index([categorySlug])
   @@index([subcategoryId])
+  @@index([variantGroupId])
 }
 
 model Order {

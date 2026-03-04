@@ -275,6 +275,7 @@ export function getProduct(id: string): Product | undefined {
   return products.find((p) => p.id === id);
 }
 
-export function formatPrice(price: number): string {
-  return `R$ ${price.toFixed(2).replace(".", ",")}`;
+export function formatPrice(price: number | string | null | undefined): string {
+  const n = Number(price ?? 0);
+  return `R$ ${(isNaN(n) ? 0 : n).toFixed(2).replace(".", ",")}`;
 }
