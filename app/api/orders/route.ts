@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { orderSchema } from "@/lib/validations";
+import { Prisma } from "@prisma/client";
 
 // GET /api/orders — list orders (admin)
 export async function GET(request: NextRequest) {
@@ -21,9 +22,7 @@ export async function GET(request: NextRequest) {
 
     const orders = await prisma.order.findMany({
       where,
-      include: {
-        items: true,
-      },
+      include: { items: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -41,9 +40,31 @@ export async function POST(request: NextRequest) {
     const parsed = orderSchema.safeParse(body);
 
     if (!parsed.success) {
+      const details = parsed.error.flatten();
+      console.error("POST /api/orders validation error:", JSON.stringify(details, null, 2));
       return NextResponse.json(
-        { error: "Dados inválidos", details: parsed.error.flatten() },
+        { error: "Dados inválidos", details },
         { status: 400 }
+      );
+    }
+
+    // Validate all productIds exist before creating the order
+    const productIds = parsed.data.items.map((i) => i.productId);
+    const existingProducts = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true },
+    });
+    const existingIds = new Set(existingProducts.map((p) => p.id));
+    const missingIds = productIds.filter((id) => !existingIds.has(id));
+
+    if (missingIds.length > 0) {
+      console.error("POST /api/orders — IDs de produto não encontrados:", missingIds);
+      return NextResponse.json(
+        {
+          error: "Um ou mais produtos do carrinho não foram encontrados. Por favor, atualize o carrinho e tente novamente.",
+          missingIds,
+        },
+        { status: 404 }
       );
     }
 
@@ -82,6 +103,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(order, { status: 201 });
   } catch (error) {
     console.error("POST /api/orders error:", error);
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return NextResponse.json(
+          { error: "Pedido duplicado: transação já registrada." },
+          { status: 409 }
+        );
+      }
+      if (error.code === "P2003") {
+        return NextResponse.json(
+          { error: "Produto do carrinho não existe mais no catálogo. Remova-o e tente novamente." },
+          { status: 409 }
+        );
+      }
+      if (error.code === "P2025") {
+        return NextResponse.json(
+          { error: "Produto não encontrado. Verifique o carrinho." },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(
+        { error: `Erro de banco (${error.code})` },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({ error: "Erro ao criar pedido" }, { status: 500 });
   }
 }
