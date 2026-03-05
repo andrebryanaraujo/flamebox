@@ -34,11 +34,11 @@ export default function AdminRelatoriosPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/orders").then((r) => r.json()),
-      fetch("/api/products").then((r) => r.json()),
+      fetch("/api/orders").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/products").then((r) => (r.ok ? r.json() : [])),
     ]).then(([ords, prods]) => {
-      setOrders(ords);
-      setProducts(prods);
+      setOrders(Array.isArray(ords) ? ords : []);
+      setProducts(Array.isArray(prods) ? prods : []);
       setLoading(false);
     });
   }, []);

@@ -29,11 +29,12 @@ export default function AdminClientesPage() {
 
   useEffect(() => {
     fetch("/api/orders")
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : []))
       .then((orders: Order[]) => {
+        const arr = Array.isArray(orders) ? orders : [];
         // Derive unique clients from orders
         const clientMap = new Map<string, Client>();
-        for (const o of orders) {
+        for (const o of arr) {
           const key = o.customerEmail;
           const existing = clientMap.get(key);
           if (existing) {

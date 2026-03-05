@@ -56,11 +56,11 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/products").then((r) => r.json()),
-      fetch("/api/orders").then((r) => r.json()),
+      fetch("/api/products").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/orders").then((r) => (r.ok ? r.json() : [])),
     ]).then(([prods, ords]) => {
-      setProducts(prods);
-      setOrders(ords);
+      setProducts(Array.isArray(prods) ? prods : []);
+      setOrders(Array.isArray(ords) ? ords : []);
       setLoading(false);
     });
   }, []);

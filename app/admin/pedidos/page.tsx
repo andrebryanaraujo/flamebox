@@ -43,8 +43,8 @@ export default function AdminPedidosPage() {
   const fetchOrders = (query?: string) => {
     const url = query ? `/api/orders?search=${encodeURIComponent(query)}` : "/api/orders";
     fetch(url)
-      .then((r) => r.json())
-      .then((data) => { setOrders(data); setLoading(false); });
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => { setOrders(Array.isArray(data) ? data : []); setLoading(false); });
   };
 
   useEffect(() => { fetchOrders(); }, []);
