@@ -6,6 +6,7 @@ export interface CartProduct {
   id: string;
   name: string;
   price: number;
+  discount?: number | null;
   image: string;
 }
 
@@ -90,7 +91,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = useCallback(() => setItems([]), []);
 
   const cartCount = items.reduce((acc, i) => acc + i.quantity, 0);
-  const cartTotal = items.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
+  const cartTotal = items.reduce((acc, i) => {
+    const d = i.product.discount;
+    const effectivePrice = (d != null && d > 0)
+      ? Math.round(i.product.price * (1 - d / 100) * 100) / 100
+      : i.product.price;
+    return acc + effectivePrice * i.quantity;
+  }, 0);
 
   return (
     <CartContext.Provider

@@ -37,12 +37,16 @@ export default function CheckoutPage() {
   }, [items, cartTotal]);
 
   // Normalize cart items for API calls
-  const getItemsPayload = () => savedItems.current.map((item) => ({
-    productId: item.product.id,
-    productName: item.product.name,
-    quantity: item.quantity,
-    price: item.product.price,
-  }));
+  const getItemsPayload = () => savedItems.current.map((item) => {
+    const d = item.product.discount;
+    const effectivePrice = (d != null && d > 0) ? item.product.price * (1 - d / 100) : item.product.price;
+    return {
+      productId: item.product.id,
+      productName: item.product.name,
+      quantity: item.quantity,
+      price: effectivePrice,
+    };
+  });
 
   // Countdown timer (starts after payment created)
   useEffect(() => {
@@ -258,18 +262,22 @@ export default function CheckoutPage() {
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: "0.5rem", fontWeight: 600 }}>
               RESUMO DO PEDIDO
             </div>
-            {savedItems.current.map((item, i) => (
-              <div key={`${item.product.id}-${i}`} style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "0.82rem",
-                padding: "0.25rem 0",
-                color: "var(--text-secondary)",
-              }}>
-                <span>{item.quantity}x {item.product.name}</span>
-                <span>{formatPrice(item.product.price * item.quantity)}</span>
-              </div>
-            ))}
+            {savedItems.current.map((item, i) => {
+              const d = item.product.discount;
+              const effectivePrice = (d != null && d > 0) ? item.product.price * (1 - d / 100) : item.product.price;
+              return (
+                <div key={`${item.product.id}-${i}`} style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.82rem",
+                  padding: "0.25rem 0",
+                  color: "var(--text-secondary)",
+                }}>
+                  <span>{item.quantity}x {item.product.name}</span>
+                  <span>{formatPrice(effectivePrice * item.quantity)}</span>
+                </div>
+              );
+            })}
             <div style={{
               display: "flex",
               justifyContent: "space-between",

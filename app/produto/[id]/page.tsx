@@ -92,6 +92,11 @@ export default function ProductPage({ params }: Props) {
   const inStock = product.stock > 0;
   const maxQty = Math.min(product.stock, 99);
 
+  const hasDiscount = product.discount != null && product.discount > 0;
+  const discountedPrice = hasDiscount
+    ? product.price * (1 - product.discount! / 100)
+    : product.price;
+
   const handleDecrement = () => setQuantity((q) => Math.max(1, q - 1));
   const handleIncrement = () => setQuantity((q) => Math.min(maxQty, q + 1));
 
@@ -123,7 +128,15 @@ export default function ProductPage({ params }: Props) {
           <h1 className="product-detail-name">{product.name}</h1>
 
           <div className="product-detail-price-row">
-            <span className="product-detail-price">{formatPrice(product.price)}</span>
+            {hasDiscount ? (
+              <>
+                <span className="product-detail-price-old">{formatPrice(product.price)}</span>
+                <span className="product-detail-price">{formatPrice(discountedPrice)}</span>
+                <span className="product-detail-discount-badge">-{product.discount}%</span>
+              </>
+            ) : (
+              <span className="product-detail-price">{formatPrice(product.price)}</span>
+            )}
           </div>
 
           <div className="delivery-badge">
@@ -151,7 +164,10 @@ export default function ProductPage({ params }: Props) {
             <div className="sidebar-stock-label">
               {inStock ? "Estoque disponível" : "Esgotado"}
             </div>
-            <div className="sidebar-stock-price">{formatPrice(product.price)}</div>
+            <div className="sidebar-stock-price">{formatPrice(discountedPrice)}</div>
+            {hasDiscount && (
+              <div className="sidebar-stock-price-old">{formatPrice(product.price)}</div>
+            )}
             <div className="sidebar-stock-count">
               <span className={`dot ${inStock ? "in" : "out"}`} />
               {inStock ? (

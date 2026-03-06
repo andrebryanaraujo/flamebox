@@ -944,6 +944,19 @@ main {
   color: var(--green-online);
 }
 
+.product-detail-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
 .delivery-badge {
   display: inline-flex;
   align-items: center;
@@ -996,6 +1009,13 @@ main {
   font-weight: 800;
   color: var(--text-primary);
   line-height: 1.2;
+}
+
+.sidebar-stock-price-old {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  margin-top: -0.15rem;
 }
 
 .sidebar-stock-count {
@@ -1485,6 +1505,18 @@ main {
 .cart-item-price {
   color: var(--purple-light);
   font-weight: 700;
+}
+
+.cart-item-price-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart-item-price-old {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
 }
 
 .cart-item-controls {

@@ -30,40 +30,52 @@ export default function CartPage() {
 
       <div className="cart-layout">
         <div className="cart-items">
-          {items.map((item) => (
-            <div key={item.product.id} className="cart-item">
-              <Image
-                src={item.product.image}
-                alt={item.product.name}
-                width={80}
-                height={80}
-                className="cart-item-image"
-              />
-              <div className="cart-item-info">
-                <div className="cart-item-name">{item.product.name}</div>
-                <div className="cart-item-price">{formatPrice(item.product.price)}</div>
+          {items.map((item) => {
+            const d = item.product.discount;
+            const hasDiscount = d != null && d > 0;
+            const effectivePrice = hasDiscount ? item.product.price * (1 - d! / 100) : item.product.price;
+            return (
+              <div key={item.product.id} className="cart-item">
+                <Image
+                  src={item.product.image}
+                  alt={item.product.name}
+                  width={80}
+                  height={80}
+                  className="cart-item-image"
+                />
+                <div className="cart-item-info">
+                  <div className="cart-item-name">{item.product.name}</div>
+                  {hasDiscount ? (
+                    <div className="cart-item-price-row">
+                      <span className="cart-item-price-old">{formatPrice(item.product.price)}</span>
+                      <span className="cart-item-price">{formatPrice(effectivePrice)}</span>
+                    </div>
+                  ) : (
+                    <div className="cart-item-price">{formatPrice(item.product.price)}</div>
+                  )}
+                </div>
+                <div className="cart-item-controls">
+                  <button className="qty-btn" onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>−</button>
+                  <span className="cart-item-qty">{item.quantity}</span>
+                  <button className="qty-btn" onClick={() => updateQuantity(item.product.id, item.quantity + 1)}>+</button>
+                </div>
+                <button className="btn-remove" onClick={() => removeItem(item.product.id)}>
+                  <Trash2 size={18} />
+                </button>
               </div>
-              <div className="cart-item-controls">
-                <button className="qty-btn" onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>−</button>
-                <span className="cart-item-qty">{item.quantity}</span>
-                <button className="qty-btn" onClick={() => updateQuantity(item.product.id, item.quantity + 1)}>+</button>
-              </div>
-              <button className="btn-remove" onClick={() => removeItem(item.product.id)}>
-                <Trash2 size={18} />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="cart-summary">
           <h3 className="cart-summary-title">Resumo do Pedido</h3>
           <div className="cart-summary-row">
             <span>Subtotal</span>
-            <span>{formatPrice(cartTotal)}</span>
+            <span>{formatPrice(items.reduce((acc, i) => acc + i.product.price * i.quantity, 0))}</span>
           </div>
           <div className="cart-summary-row">
             <span>Desconto</span>
-            <span style={{ color: "var(--green-online)" }}>-R$ 0,00</span>
+            <span style={{ color: "var(--green-online)" }}>-{formatPrice(items.reduce((acc, i) => acc + i.product.price * i.quantity, 0) - cartTotal)}</span>
           </div>
           <div className="cart-summary-total">
             <span>Total</span>
